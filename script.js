@@ -1,12 +1,12 @@
-import { curr_time, curr_track, next_btn, now_playing, playpause_btn, prev_btn, randomIcon, random_track, repeat_btn, seek_slider, total_duration, track_art, track_artist, track_name, volume_slider } from './event_listeners.js';
-import { music_list } from './helper.js';
+import { curr_time, curr_track, details_container, next_btn, playpause_btn, prev_btn, randomIcon, random_track, repeat_btn, seek_slider, total_duration, volume_slider } from './event_listeners.js';
+import { createElement, music_list } from './helper.js';
 
 let track_index = 0;
 let isPlaying = false;
 let isRandom = false;
 let updateTimer;
 
-loadTrack(track_index);
+let rotate = loadTrack(track_index);
 
 function loadTrack(track_index){
     clearInterval(updateTimer);
@@ -15,16 +15,15 @@ function loadTrack(track_index){
     curr_track.src = music_list[track_index].music;
     curr_track.load();
 
-    track_art.style.backgroundImage = `url(${music_list[track_index].img})`;
-    track_name.textContent = music_list[track_index].name;
-    track_artist.textContent = music_list[track_index].artist;
-    now_playing.textContent = `Playing music ${track_index + 1} of ${music_list.length}`;
-
+    const rotate = details(track_index);
     updateTimer = setInterval(setUpdate, 1000);
 
     curr_track.addEventListener('ended', nextTrack);
     random_bg_color();
+    return rotate;
 }
+
+// background change
 function random_bg_color(){
     let hex = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e'];
     let a;
@@ -44,34 +43,39 @@ function random_bg_color(){
     let gradient = `linear-gradient(${angle}, ${Color1}, ${Color2})`;
     document.body.style.background = gradient;
 }
+
 function reset(){
     curr_time.textContent = "00:00";
     total_duration.textContent = "00:00";
     seek_slider.value = 0;
 }
+
 function randomTrack(){
     isRandom ? randomIcon.classList.remove('randomActive') : randomIcon.classList.add('randomActive');
-    isRandom = ! isRandom;
+    isRandom = !isRandom;
 }
 
 function playpauseTrack(){
     isPlaying ? pauseTrack() : playTrack();
 }
+
 function playTrack(){
     curr_track.play();
-    isPlaying = !isPlaying;
-    track_art.classList.add('rotate');
+    isPlaying = true;
+    rotate();
     playpause_btn.innerHTML = '<i class="fa fa-pause-circle fa-5x"></i>';
 }
+
 function pauseTrack(){
     curr_track.pause();
-    isPlaying = !isPlaying;
-    track_art.classList.remove('rotate');
+    isPlaying = false;
+    rotate();
     playpause_btn.innerHTML = '<i class="fa fa-play-circle fa-5x"></i>';
 }
+
 function repeatTrack(){
     let current_index = track_index;
-    loadTrack(current_index);
+    rotate = loadTrack(current_index);
     playTrack();
 }
 
@@ -84,30 +88,27 @@ function nextTrack(){
     }else{
         track_index = 0;
     }
-    loadTrack(track_index);
+    rotate = loadTrack(track_index);
     playTrack();
 }
+
 function prevTrack(){
-    if(track_index > 0){
-        track_index -= 1;
-    }else{
-        track_index = music_list.length -1;
-    }
-    loadTrack(track_index);
+    track_index > 0 ? track_index -= 1 : track_index = music_list.length -1;
+    rotate = loadTrack(track_index);
     playTrack();
 }
+
 function seekTo(){
-    let seekto = curr_track.duration * (seek_slider.value / 100);
-    curr_track.currentTime = seekto;
+    curr_track.currentTime = curr_track.duration * (seek_slider.value / 100);
 }
+
 function setVolume(){
     curr_track.volume = volume_slider.value / 100;
 }
+
 function setUpdate(){
-    let seekPosition = 0;
     if(!isNaN(curr_track.duration)){
-        seekPosition = curr_track.currentTime * (100 / curr_track.duration);
-        seek_slider.value = seekPosition;
+        seek_slider.value = curr_track.currentTime * (100 / curr_track.duration) || 0;
 
         let currentMinutes = Math.floor(curr_track.currentTime / 60);
         let currentSeconds = Math.floor(curr_track.currentTime - currentMinutes * 60);
@@ -124,8 +125,40 @@ function setUpdate(){
     }
 }
 
-/* event listeners */
+function details(track_index) {
+    const wrapper = createElement('div', {
+        className: 'wrapper'
+    });
+    const data = createElement('div', {
+        className: 'details'
+    });
+    const playlist = createElement('div', {
+        className: 'playingNow',
+        textContent: `Playing music ${track_index + 1} of ${music_list.length}`
+    });
+    const trackImg = createElement('div', {
+        className: 'trackArt'
+    });
+    trackImg.style.backgroundImage = `url(${music_list[track_index].img})`;
+    
+    const trackName = createElement('div', {
+        className: 'trackName',
+        textContent: music_list[track_index].name
+    });
+    const trackAuthor = createElement('div', {
+        className: 'trackArtist',
+        textContent: music_list[track_index].artist
+    });
+    data.append(playlist, trackImg, trackName, trackAuthor);
+    details_container.replaceChildren(data);
 
+    const rotate = () => {
+        trackImg.classList.toggle('rotate');
+    }
+    return rotate;
+}
+
+/* event listeners */
 random_track.addEventListener('click', randomTrack);
 playpause_btn.addEventListener('click', playpauseTrack);
 prev_btn.addEventListener('click', prevTrack);
