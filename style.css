@@ -25,7 +25,7 @@ body {
   content: '';
   filter: blur(32px);
   left: 10px;
-  opacity: .5;
+  opacity: 0.5;
   position: absolute;
   right: 10px;
   top: 10px;
@@ -82,9 +82,15 @@ body {
   padding: 15px;
   margin: 10px;
   opacity: 0.8;
-  transition: opacity .2s;
+  transition: opacity 0.2s;
+  border: none;
 }
-    
+i {
+  transition: all 0.5s ease-in-out;
+}
+button:hover > i {
+  color: orange;
+}
 .repeatTrack:hover,
 .randomTrack:hover,
 .play:hover,
@@ -103,12 +109,15 @@ body {
   appearance: none;
   height: 5px;
   background: #83A9FF;
-  transition: opacity .2s;
+  transition: all 0.5s ease-in-out;
 }
     
 .seekSlider:hover,
 .volumeSlider:hover {
   opacity: 1.0;
+  background-color: orange;
+  transform: scaleY(1.1);
+  cursor: pointer;
 }
     
 .seekSlider {
@@ -128,14 +137,20 @@ i.fa-volume-down,
 i.fa-volume-up {
   padding: 10px;
 }
-    
+i.fa-volume-down:hover {
+  cursor: pointer;
+  transform: scale(1.1);
+}
+.mute {
+  color: red;
+}
 button {
-  min-width: 60px;
+  min-width: 55px;
   cursor: pointer;
   border-radius: 30px;
 }
 .randomActive{
-  color: black;
+  background-color: red;
 }
 .rotate {
   animation: rotation 8s infinite linear;

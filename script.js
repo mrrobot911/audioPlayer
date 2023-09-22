@@ -1,9 +1,10 @@
-import { curr_time, curr_track, details_container, next_btn, playpause_btn, prev_btn, randomIcon, random_track, repeat_btn, seek_slider, total_duration, volume_slider } from './event_listeners.js';
+import { curr_time, curr_track, details_container, mute, next_btn, playpause_btn, prev_btn, random_track, repeat_btn, seek_slider, total_duration, volume_slider } from './event_listeners.js';
 import { createElement, music_list } from './helper.js';
 
 let track_index = 0;
 let isPlaying = false;
 let isRandom = false;
+let isMute = false;
 let updateTimer;
 
 let rotate = loadTrack(track_index);
@@ -14,6 +15,7 @@ function loadTrack(track_index){
 
     curr_track.src = music_list[track_index].music;
     curr_track.load();
+    setVolume();
 
     const rotate = details(track_index);
     updateTimer = setInterval(setUpdate, 1000);
@@ -51,7 +53,7 @@ function reset(){
 }
 
 function randomTrack(){
-    isRandom ? randomIcon.classList.remove('randomActive') : randomIcon.classList.add('randomActive');
+    random_track.classList.toggle('randomActive');
     isRandom = !isRandom;
 }
 
@@ -106,6 +108,11 @@ function setVolume(){
     curr_track.volume = volume_slider.value / 100;
 }
 
+function muteVolume() {
+    mute.classList.toggle('mute');
+    isMute ? setVolume() : curr_track.volume = 0;
+    isMute = !isMute;
+}
 function setUpdate(){
     if(!isNaN(curr_track.duration)){
         seek_slider.value = curr_track.currentTime * (100 / curr_track.duration) || 0;
@@ -126,9 +133,6 @@ function setUpdate(){
 }
 
 function details(track_index) {
-    const wrapper = createElement('div', {
-        className: 'wrapper'
-    });
     const data = createElement('div', {
         className: 'details'
     });
@@ -166,3 +170,4 @@ next_btn.addEventListener('click', nextTrack);
 repeat_btn.addEventListener('click', repeatTrack);
 volume_slider.addEventListener('click', setVolume);
 seek_slider.addEventListener('click', seekTo);
+mute.addEventListener('click', muteVolume);
