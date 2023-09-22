@@ -1,44 +1,10 @@
-let now_playing = document.querySelector('.now-playing');
-let track_art = document.querySelector('.track-art');
-let track_name = document.querySelector('.track-name');
-let track_artist = document.querySelector('.track-artist');
-
-let playpause_btn = document.querySelector('.playpause-track');
-let next_btn = document.querySelector('.next-track');
-let prev_btn = document.querySelector('.prev-track');
-
-let seek_slider = document.querySelector('.seek_slider');
-let volume_slider = document.querySelector('.volume_slider');
-let curr_time = document.querySelector('.current-time');
-let total_duration = document.querySelector('.total-duration');
-let randomIcon = document.querySelector('.fa-random');
-let curr_track = document.createElement('audio');
+import { curr_time, curr_track, next_btn, now_playing, playpause_btn, prev_btn, randomIcon, random_track, repeat_btn, seek_slider, total_duration, track_art, track_artist, track_name, volume_slider } from './event_listeners.js';
+import { music_list } from './helper.js';
 
 let track_index = 0;
 let isPlaying = false;
 let isRandom = false;
 let updateTimer;
-
-const music_list = [
-    {
-        img : 'images/stay.png',
-        name : 'Stay',
-        artist : 'The Kid LAROI, Justin Bieber',
-        music : 'music/Icon_For_Hire.mp3'
-    },
-    {
-        img : 'images/fallingdown.jpg',
-        name : 'Falling Down',
-        artist : 'Wid Cards',
-        music : 'music/Muse_Uprising.mp3'
-    },
-    {
-        img : 'images/faded.png',
-        name : 'Faded',
-        artist : 'Alan Walker',
-        music : 'music/Beat_The_Devils_Tattoo.mp3'
-    }
-];
 
 loadTrack(track_index);
 
@@ -49,17 +15,16 @@ function loadTrack(track_index){
     curr_track.src = music_list[track_index].music;
     curr_track.load();
 
-    track_art.style.backgroundImage = "url(" + music_list[track_index].img + ")";
+    track_art.style.backgroundImage = `url(${music_list[track_index].img})`;
     track_name.textContent = music_list[track_index].name;
     track_artist.textContent = music_list[track_index].artist;
-    now_playing.textContent = "Playing music " + (track_index + 1) + " of " + music_list.length;
+    now_playing.textContent = `Playing music ${track_index + 1} of ${music_list.length}`;
 
     updateTimer = setInterval(setUpdate, 1000);
 
     curr_track.addEventListener('ended', nextTrack);
     random_bg_color();
 }
-
 function random_bg_color(){
     let hex = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e'];
     let a;
@@ -76,7 +41,7 @@ function random_bg_color(){
     let Color2 = populate('#');
     var angle = 'to right';
 
-    let gradient = 'linear-gradient(' + angle + ',' + Color1 + ', ' + Color2 + ")";
+    let gradient = `linear-gradient(${angle}, ${Color1}, ${Color2})`;
     document.body.style.background = gradient;
 }
 function reset(){
@@ -85,36 +50,31 @@ function reset(){
     seek_slider.value = 0;
 }
 function randomTrack(){
-    isRandom ? pauseRandom() : playRandom();
+    isRandom ? randomIcon.classList.remove('randomActive') : randomIcon.classList.add('randomActive');
+    isRandom = ! isRandom;
 }
-function playRandom(){
-    isRandom = true;
-    randomIcon.classList.add('randomActive');
+
+function playpauseTrack(){
+    isPlaying ? pauseTrack() : playTrack();
 }
-function pauseRandom(){
-    isRandom = false;
-    randomIcon.classList.remove('randomActive');
+function playTrack(){
+    curr_track.play();
+    isPlaying = !isPlaying;
+    track_art.classList.add('rotate');
+    playpause_btn.innerHTML = '<i class="fa fa-pause-circle fa-5x"></i>';
+}
+function pauseTrack(){
+    curr_track.pause();
+    isPlaying = !isPlaying;
+    track_art.classList.remove('rotate');
+    playpause_btn.innerHTML = '<i class="fa fa-play-circle fa-5x"></i>';
 }
 function repeatTrack(){
     let current_index = track_index;
     loadTrack(current_index);
     playTrack();
 }
-function playpauseTrack(){
-    isPlaying ? pauseTrack() : playTrack();
-}
-function playTrack(){
-    curr_track.play();
-    isPlaying = true;
-    track_art.classList.add('rotate');
-    playpause_btn.innerHTML = '<i class="fa fa-pause-circle fa-5x"></i>';
-}
-function pauseTrack(){
-    curr_track.pause();
-    isPlaying = false;
-    track_art.classList.remove('rotate');
-    playpause_btn.innerHTML = '<i class="fa fa-play-circle fa-5x"></i>';
-}
+
 function nextTrack(){
     if(track_index < music_list.length - 1 && isRandom === false){
         track_index += 1;
@@ -159,7 +119,17 @@ function setUpdate(){
         if(currentMinutes < 10) {currentMinutes = "0" + currentMinutes; }
         if(durationMinutes < 10) { durationMinutes = "0" + durationMinutes; }
 
-        curr_time.textContent = currentMinutes + ":" + currentSeconds;
-        total_duration.textContent = durationMinutes + ":" + durationSeconds;
+        curr_time.textContent = `${currentMinutes}:${currentSeconds}`;
+        total_duration.textContent = `${durationMinutes}:${durationSeconds}`;
     }
 }
+
+/* event listeners */
+
+random_track.addEventListener('click', randomTrack);
+playpause_btn.addEventListener('click', playpauseTrack);
+prev_btn.addEventListener('click', prevTrack);
+next_btn.addEventListener('click', nextTrack);
+repeat_btn.addEventListener('click', repeatTrack);
+volume_slider.addEventListener('click', setVolume);
+seek_slider.addEventListener('click', seekTo);
