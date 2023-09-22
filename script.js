@@ -15,7 +15,7 @@ function loadTrack(track_index){
 
     curr_track.src = music_list[track_index].music;
     curr_track.load();
-    setVolume();
+    isMute ? curr_track.volume = 0 : setVolume();
 
     const rotate = details(track_index);
     updateTimer = setInterval(setUpdate, 1000);
