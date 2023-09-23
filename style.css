@@ -112,12 +112,12 @@ button:hover > i {
   background: #83A9FF;
   transition: all 0.5s ease-in-out;
 }
-    
+   
 .seekSlider:hover,
 .volumeSlider:hover {
   opacity: 1.0;
   background-color: orange;
-  transform: scaleY(1.1);
+  transform: scaleY(1.2);
   cursor: pointer;
 }
     
@@ -140,7 +140,8 @@ i.fa-volume-up {
 }
 i.fa-volume-down:hover {
   cursor: pointer;
-  transform: scale(1.1);
+  transform: scale(1.4);
+  color: orange;
 }
 .mute {
   color: red;

@@ -168,6 +168,6 @@ playpause_btn.addEventListener('click', playpauseTrack);
 prev_btn.addEventListener('click', prevTrack);
 next_btn.addEventListener('click', nextTrack);
 repeat_btn.addEventListener('click', repeatTrack);
-volume_slider.addEventListener('click', setVolume);
+volume_slider.addEventListener('input', setVolume);
 seek_slider.addEventListener('click', seekTo);
 mute.addEventListener('click', muteVolume);
